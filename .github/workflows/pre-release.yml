@@ -1,0 +1,99 @@
+name: Publish to Crates.io
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Type of release (major/minor/patch)'
+        required: true
+        default: 'minor'
+      dry_run:
+        description: 'Dry run (true/false)'
+        required: true
+        default: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # Check out the repository with full history for tagging purposes
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Ensure Cargo directories for caching
+      - name: Ensure Cargo Directories Exist
+        run: |
+          mkdir -p ~/.cargo/registry
+          mkdir -p ~/.cargo/index
+          mkdir -p target
+        shell: bash
+
+      # Cache Cargo components
+      - name: Cache Cargo Registry, Index, Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/index
+            target
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            cargo-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.toml') }}
+            cargo-build-${{ runner.os }}-${{ runner.arch }}-
+
+      # Set up Rust toolchain
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+
+      # Install necessary tools like cargo-release
+      - name: Install cargo-release
+        run: |
+          if ! command -v cargo-release &> /dev/null; then
+            echo "Installing cargo-release..."
+            cargo install cargo-release
+          else
+            echo "cargo-release is already installed"
+          fi
+
+      # Build and test the release
+      - name: Build and Test Release
+        run: |
+          cargo build --release --verbose
+          cargo test --release --verbose
+
+      # Configure Git for version tagging
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+      # Prepare and publish to crates.io
+      - name: Publish to Crates.io
+        run: |
+          REL_TYPE=${{ github.event.inputs.type }}
+          DRY_RUN=${{ github.event.inputs.dry_run }}
+          BRANCH=${{ github.ref }}
+
+          echo "Logging into crates.io"
+          cargo login ${{ secrets.CRATESIO_API_TOKEN }}
+
+          if [ "$DRY_RUN" = "false" ]; then
+            echo "Executing release"
+            cargo release --verbose --execute --no-confirm $REL_TYPE
+            VERSION=$(grep '^version = ' Cargo.toml | sed -E 's/version = "(.*)"/\1/')
+            echo "Pushing tags for version $VERSION"
+            git push --tags origin $BRANCH
+          else
+            echo "Dry run: not executing release"
+            cargo release --verbose $REL_TYPE
+          fi
