@@ -1,10 +1,12 @@
+//! Json parser and writer for RapidRecast Definition Language
 #[cfg(test)]
 mod test;
 
 use crate::ast::RapidRecastDefinition;
 use crate::{ParseRRDL, SaveRRDL};
-use std::io::Read;
+use std::io::{Cursor};
 
+/// A parser for the RapidRecastDefinition Language in JSON
 pub struct JsonRRDL {}
 
 impl<'self_life, 'input_life> ParseRRDL<'self_life, 'input_life> for JsonRRDL {
@@ -16,9 +18,9 @@ impl<'self_life, 'input_life> ParseRRDL<'self_life, 'input_life> for JsonRRDL {
     }
 }
 
-impl<R: Read> SaveRRDL<R> for JsonRRDL {
-    fn save_rrdl<'param>(&'param self, definition: &'param RapidRecastDefinition) -> R {
+impl SaveRRDL<Cursor<Vec<u8>>> for JsonRRDL {
+    fn save_rrdl<'param>(&'param self, definition: &'param RapidRecastDefinition) -> Cursor<Vec<u8>> {
         let res = serde_json::to_vec(definition).unwrap();
-        res
+        Cursor::new(res)
     }
 }

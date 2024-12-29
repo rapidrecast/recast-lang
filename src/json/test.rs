@@ -2,6 +2,7 @@ use crate::ast::{RapidRecastDefinition, Version};
 use crate::json::JsonRRDL;
 use crate::ParseRRDL;
 use std::borrow::Cow;
+use crate::test::SCHEMA_BARE_MINIMUM;
 
 #[test]
 pub fn bare_minimum() {
@@ -9,7 +10,8 @@ pub fn bare_minimum() {
     {
         "id": "unique-schema-id-123",
         "language_version": "1.2.3",
-        "file_version": "4.5.6"
+        "file_version": "4.5.6",
+        "ast": []
     }
     "#;
 
@@ -35,4 +37,10 @@ pub fn bare_minimum() {
             ast: vec![],
         }
     )
+}
+
+#[test]
+pub fn test_basic_save() {
+    let _definition = SCHEMA_BARE_MINIMUM.clone();
+    todo!()
 }

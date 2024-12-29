@@ -26,6 +26,7 @@ pub trait ParseRRDL<'self_life, 'input_life> {
     ) -> Result<RapidRecastDefinition<'input_life>, ()>;
 }
 
+/// Save a provided RapidRecast Definition Language AST into a specified output.
 pub trait SaveRRDL<READ: Read> {
     /// Given a definition, save it to an output
     fn save_rrdl<'param>(&'param self, definition: &'param RapidRecastDefinition) -> READ;
