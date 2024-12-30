@@ -1,4 +1,4 @@
-use crate::ast::protocol::{HttpMethod, HttpStatement, RapidProtocolDefinition};
+use crate::ast::protocol::{HttpStatement, RapidProtocolDefinition, RapidRecastHttpMethod};
 use crate::ast::{RapidAstStatement, RapidRecastDefinition, Version};
 use std::borrow::Cow;
 
@@ -29,7 +29,7 @@ pub fn schema_with_proto_definition() -> RapidRecastDefinition<'static> {
         RapidProtocolDefinition::HttpProtocolDefinition(HttpStatement {
             sequence: 0,
             paths: vec![Cow::Borrowed("/")],
-            methods: vec![HttpMethod::GET],
+            methods: vec![RapidRecastHttpMethod::GET],
             actions: vec![],
         }),
     ));

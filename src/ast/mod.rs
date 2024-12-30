@@ -1,6 +1,6 @@
 //! This module contains the AST definitions for the RapidRecast language.
 
-mod action;
+pub mod action;
 pub mod cron;
 pub mod model;
 pub mod protocol;

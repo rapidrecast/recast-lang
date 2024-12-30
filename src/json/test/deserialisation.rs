@@ -1,4 +1,4 @@
-use crate::ast::protocol::{HttpMethod, HttpStatement, RapidProtocolDefinition};
+use crate::ast::protocol::{HttpStatement, RapidProtocolDefinition, RapidRecastHttpMethod};
 use crate::ast::RapidAstStatement::ProtocolDefinition;
 use crate::ast::{RapidRecastDefinition, Version};
 use crate::json::JsonRRDL;
@@ -85,7 +85,7 @@ pub fn protocol_definition() {
                 RapidProtocolDefinition::HttpProtocolDefinition(HttpStatement {
                     sequence: 0,
                     paths: vec![Cow::Borrowed("/user")],
-                    methods: vec![HttpMethod::POST],
+                    methods: vec![RapidRecastHttpMethod::POST],
                     actions: vec![],
                 })
             ),],

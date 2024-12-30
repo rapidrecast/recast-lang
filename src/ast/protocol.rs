@@ -21,14 +21,14 @@ pub struct HttpStatement<'a> {
     /// The paths to match on the HTTP protocol
     pub paths: Vec<Cow<'a, str>>,
     /// The methods of access for this rule. GET, POST, DELETE, UPDATE
-    pub methods: Vec<HttpMethod>,
+    pub methods: Vec<RapidRecastHttpMethod>,
     /// Actions that take effect once the protocol is triggered
     pub actions: Vec<RapidRecastAction<'a>>,
 }
 
 /// Http Methods supported by RapidRecast
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub enum HttpMethod {
+pub enum RapidRecastHttpMethod {
     /// Get Method
     GET,
     /// Post Method
@@ -53,7 +53,7 @@ pub enum HttpMethod {
 
 /// The protocols available in RapidRecast
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub enum ProtocolType {
+pub enum RapidRecastProtocolType {
     /// HTTP 1,2, and 3 protocols
     HTTP,
     /// WebSockets on HTTP 1, 2, and 3 - it is a different model of communication from HTTP 2/3 streams
@@ -62,4 +62,6 @@ pub enum ProtocolType {
     Kafka,
     /// RabbitMQ protocol
     RabbitMQ,
+    /// gRPC protocol
+    Grpc,
 }
