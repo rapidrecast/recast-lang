@@ -39,7 +39,8 @@ pub fn test_save_protocol_definition() {
                 "HttpProtocolDefinition": {
                     "sequence":0,
                     "paths": ["/"],
-                    "methods": ["GET"]
+                    "methods": ["GET"],
+                    "actions": []
                     }
                 }
             }

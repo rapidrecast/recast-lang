@@ -53,7 +53,8 @@ pub fn protocol_definition() {
                     "HttpProtocolDefinition": {
                         "sequence": 0,
                         "paths": ["/user"],
-                        "methods": ["POST"]
+                        "methods": ["POST"],
+                        "actions": []
                     }
                 }
             }
@@ -85,6 +86,7 @@ pub fn protocol_definition() {
                     sequence: 0,
                     paths: vec![Cow::Borrowed("/user")],
                     methods: vec![HttpMethod::POST],
+                    actions: vec![],
                 })
             ),],
         }

@@ -1,4 +1,5 @@
 //! Protocol Definition related AST
+use crate::ast::action::RapidRecastAction;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
@@ -21,6 +22,8 @@ pub struct HttpStatement<'a> {
     pub paths: Vec<Cow<'a, str>>,
     /// The methods of access for this rule. GET, POST, DELETE, UPDATE
     pub methods: Vec<HttpMethod>,
+    /// Actions that take effect once the protocol is triggered
+    pub actions: Vec<RapidRecastAction<'a>>,
 }
 
 /// Http Methods supported by RapidRecast

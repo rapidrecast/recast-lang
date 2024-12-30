@@ -30,6 +30,7 @@ pub fn schema_with_proto_definition() -> RapidRecastDefinition<'static> {
             sequence: 0,
             paths: vec![Cow::Borrowed("/")],
             methods: vec![HttpMethod::GET],
+            actions: vec![],
         }),
     ));
     schema
