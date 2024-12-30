@@ -1,8 +1,10 @@
 use crate::ast::{
-    ProtocolType, RapidAstStatement, RapidProtocolDefinition, RapidRecastDefinition, Version,
+    HttpMethod, HttpStatement, RapidAstStatement, RapidProtocolDefinition, RapidRecastDefinition,
+    Version,
 };
 use std::borrow::Cow;
 
+/// An AST that contains only the bare minimum info
 pub fn bare_minimum_schema() -> RapidRecastDefinition<'static> {
     RapidRecastDefinition {
         id: Cow::Borrowed("unique-schema-id-123"),
@@ -18,11 +20,19 @@ pub fn bare_minimum_schema() -> RapidRecastDefinition<'static> {
         },
         name: Some(Cow::Borrowed("some name")),
         description: Some(Cow::Borrowed("some description")),
-        ast: vec![RapidAstStatement::ProtocolDefinition(
-            RapidProtocolDefinition {
-                protocol: ProtocolType::HTTP,
-                sequence: 0,
-            },
-        )],
+        ast: vec![],
     }
+}
+
+/// A fixture to provide a simple ast with a protocol definition
+pub fn schema_with_proto_definition() -> RapidRecastDefinition<'static> {
+    let mut schema = bare_minimum_schema();
+    schema.ast.push(RapidAstStatement::ProtocolDefinition(
+        RapidProtocolDefinition::HttpProtocolDefinition(HttpStatement {
+            sequence: 0,
+            paths: vec![Cow::Borrowed("/")],
+            methods: vec![HttpMethod::GET],
+        }),
+    ));
+    schema
 }

@@ -23,7 +23,7 @@ pub trait ParseRRDL<'self_life, 'input_life> {
     fn parse_rrdl(
         &'self_life self,
         input: &'input_life str,
-    ) -> Result<RapidRecastDefinition<'input_life>, ()>;
+    ) -> Result<RapidRecastDefinition<'input_life>, String>;
 }
 
 /// Save a provided RapidRecast Definition Language AST into a specified output.

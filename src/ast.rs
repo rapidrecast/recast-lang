@@ -24,7 +24,7 @@ pub struct RapidRecastDefinition<'a> {
     /// TODO this should be something like a Cow but working for vec
     /// So not Cow::borrow(str) -> ::clone() -> Cow::Owned(String)
     /// But actually Cow::borrow([]Vals) -> ::push() -> Cow::Owned(Vec<Vals>)
-    pub ast: Vec<RapidAstStatement>,
+    pub ast: Vec<RapidAstStatement<'a>>,
 }
 
 /// A semantic version, referenced across the RapidRecastDefinition.
@@ -46,11 +46,27 @@ impl<'de> Deserialize<'de> for Version {
         let s = String::deserialize(deserializer)?;
         let mut parts = s.split('.');
 
-        let major = parts.next().ok_or_else(|| serde::de::Error::custom("Missing major version"))?.parse::<u64>().map_err(|_| serde::de::Error::custom("Invalid major version"))?;
-        let minor = parts.next().ok_or_else(|| serde::de::Error::custom("Missing minor version"))?.parse::<u64>().map_err(|_| serde::de::Error::custom("Invalid minor version"))?;
-        let patch = parts.next().ok_or_else(|| serde::de::Error::custom("Missing patch version"))?.parse::<u64>().map_err(|_| serde::de::Error::custom("Invalid patch version"))?;
+        let major = parts
+            .next()
+            .ok_or_else(|| serde::de::Error::custom("Missing major version"))?
+            .parse::<u64>()
+            .map_err(|_| serde::de::Error::custom("Invalid major version"))?;
+        let minor = parts
+            .next()
+            .ok_or_else(|| serde::de::Error::custom("Missing minor version"))?
+            .parse::<u64>()
+            .map_err(|_| serde::de::Error::custom("Invalid minor version"))?;
+        let patch = parts
+            .next()
+            .ok_or_else(|| serde::de::Error::custom("Missing patch version"))?
+            .parse::<u64>()
+            .map_err(|_| serde::de::Error::custom("Invalid patch version"))?;
 
-        Ok(Version { major, minor, patch })
+        Ok(Version {
+            major,
+            minor,
+            patch,
+        })
     }
 }
 
@@ -71,11 +87,11 @@ impl Display for Version {
 
 /// A parent element of the language
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub enum RapidAstStatement {
+pub enum RapidAstStatement<'a> {
     /// A Model Definition
     ModelDefinition(RapidModelDefinition),
     /// A Protocol Definition
-    ProtocolDefinition(RapidProtocolDefinition),
+    ProtocolDefinition(RapidProtocolDefinition<'a>),
     /// A Topic Definition
     TopicDefinition(RapidTopicDefinition),
     /// A Cron Definition
@@ -87,14 +103,49 @@ pub enum RapidAstStatement {
 pub struct RapidModelDefinition {}
 
 /// A Protocol Definition
+/// The type of protocol used for the protocol definition
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
-pub struct RapidProtocolDefinition {
-    /// The type of protocol used for the protocol definition
-    pub protocol: ProtocolType,
+pub enum RapidProtocolDefinition<'a> {
+    /// Indicates that we are modifying an HTTP protocol
+    HttpProtocolDefinition(HttpStatement<'a>),
+}
+
+/// Allows for specifying parts of an HTTP statement
+#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+pub struct HttpStatement<'a> {
     /// Protocol sequence, where the order is determined from CLI order
     /// ex. `rapidrecast --http host1:123,host1:234,host2:345`
     /// That declares 3 protocols, so `sequence=2` means binding `host2:345`
     pub sequence: u8,
+    /// The paths to match on the HTTP protocol
+    pub paths: Vec<Cow<'a, str>>,
+    /// The methods of access for this rule. GET, POST, DELETE, UPDATE
+    pub methods: Vec<HttpMethod>,
+}
+
+/// Http Methods supported by RapidRecast
+#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
+pub enum HttpMethod {
+    /// Get Method
+    GET,
+    /// Post Method
+    POST,
+    /// Delete Method
+    DELETE,
+    /// Update Method
+    UPDATE,
+    /// Patch Method
+    PATCH,
+    /// Put Method
+    PUT,
+    /// Options Method
+    OPTIONS,
+    /// Head Method
+    HEAD,
+    /// Connect Method
+    CONNECT,
+    /// Trace Method
+    TRACE,
 }
 
 /// The protocols available in RapidRecast
