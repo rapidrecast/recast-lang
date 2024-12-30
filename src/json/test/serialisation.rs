@@ -103,5 +103,74 @@ pub fn gh_1_http_to_create_user_and_permissions() {
                 }),
             ],
         }),
-    ))
+    ));
+    let res = JsonRRDL {}.save_rrdl(&definition);
+    let res_str = String::from_utf8(res.into_inner()).unwrap();
+    let res: Value = serde_json::from_str(&res_str).unwrap();
+    let expected_str = r#"{
+        "id":"unique-schema-id-123",
+        "language_version":"1.2.3",
+        "file_version":"4.5.6",
+        "name":"some name",
+        "description":"some description",
+        "ast":[{
+            "ProtocolDefinition": {
+                "HttpProtocolDefinition": {
+                    "sequence":0,
+                    "paths": ["/create-user"],
+                    "methods": ["PUT", "POST", "GET"],
+                    "actions": [
+                        {
+                            "AuthBasedAction": {
+                                "CreateUser": {
+                                    "subject": {
+                                        "namespace": "some-namespace",
+                                        "username": "some-username"
+                                    },
+                                    "password": "some-password"
+                                }
+                            }
+                        },
+                        {
+                            "AuthBasedAction": {
+                                "AddMetadataToUser": {
+                                    "subject": {
+                                        "namespace": "some-namespace",
+                                        "username": "some-username"
+                                    },
+                                    "metadata": {
+                                        "key1": "value1"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "AuthBasedAction": {
+                                "GrantPermissions": {
+                                    "subject": {
+                                        "namespace": "some-namespace",
+                                        "username": "some-username"
+                                    },
+                                    "policy": [
+                                        {
+                                            "subject": "Admin",
+                                            "object": {
+                                                "Topic": {
+                                                    "NonExistingTopic": "some-namespace"
+                                                }
+                                            },
+                                            "action": "Create"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }]}"#;
+    let expected: Value = serde_json::from_str(expected_str).unwrap();
+    assert!(expected.is_object());
+    assert!(res.is_object());
+    assert_eq!(res, expected);
 }
