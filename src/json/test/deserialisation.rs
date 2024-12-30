@@ -1,7 +1,6 @@
+use crate::ast::protocol::{HttpMethod, HttpStatement, RapidProtocolDefinition};
 use crate::ast::RapidAstStatement::ProtocolDefinition;
-use crate::ast::{
-    HttpMethod, HttpStatement, RapidProtocolDefinition, RapidRecastDefinition, Version,
-};
+use crate::ast::{RapidRecastDefinition, Version};
 use crate::json::JsonRRDL;
 use crate::ParseRRDL;
 use std::borrow::Cow;

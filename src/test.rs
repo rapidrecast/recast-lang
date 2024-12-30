@@ -1,7 +1,5 @@
-use crate::ast::{
-    HttpMethod, HttpStatement, RapidAstStatement, RapidProtocolDefinition, RapidRecastDefinition,
-    Version,
-};
+use crate::ast::protocol::{HttpMethod, HttpStatement, RapidProtocolDefinition};
+use crate::ast::{RapidAstStatement, RapidRecastDefinition, Version};
 use std::borrow::Cow;
 
 /// An AST that contains only the bare minimum info
